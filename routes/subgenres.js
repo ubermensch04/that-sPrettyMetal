@@ -1,7 +1,7 @@
 const express = require('express');
 const Subgenre=require('../models/subgenreModel.js')
 const router = express.Router();
-
+const {protect, authorize} = require('../middleware/authMiddleware.js');
 
 
 router.get('/', async (req, res, next) => {
@@ -63,7 +63,7 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-router.post('/', async (req, res, next) => {
+router.post('/',protect,authorize('admin'), async (req, res, next) => {
     const {name,description,keyBands,influencerBands,pioneeringAlbums} = req.body;
     const newSubgenre = new Subgenre({
             name,
@@ -93,7 +93,7 @@ router.post('/', async (req, res, next) => {
 });
 
 
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', protect, authorize('admin'), async (req, res, next) => {
     const subgenreId = req.params.id;
     try{
         if(req.body.name) {
@@ -137,7 +137,7 @@ router.put('/:id', async (req, res, next) => {
     }
 });
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', protect, authorize('admin'), async (req, res, next) => {
     const subgenreId = req.params.id;
     try{
         const deletedSubgenre = await Subgenre.findByIdAndDelete(subgenreId);
